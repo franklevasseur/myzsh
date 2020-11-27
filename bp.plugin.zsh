@@ -1,5 +1,5 @@
 # botpress
-bot="/home/francois/Documents/botpress-root/"
+bot="$HOME/Documents/botpress-root/"
 bot() {
     cd $bot 
 }
