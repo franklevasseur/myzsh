@@ -16,6 +16,15 @@ yb() {
     fi
 }
 
+yp() {
+    if [[ $1 != "" ]]
+    then
+    	yarn cmd package:modules --m $1
+    else
+        yarn cmd package
+    fi
+}
+
 ys() {
     if [[ $1 = "l" ]]
     then
@@ -50,6 +59,9 @@ bpconf() {
     if [[ $1 = "global" || $# -eq 0 ]]
     then
         echo "$(pwd)/out/bp/data/global/botpress.config.json"
+    elif [[ $1 = "zsh" ]]
+    then
+        echo "$HOME/.oh-my-zsh/custom/plugins/bp/bp.plugin.zsh"
     else
         filename=$1
         echo "$(pwd)/out/bp/data/global/config/${filename}.json"
