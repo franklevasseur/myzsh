@@ -67,3 +67,12 @@ bpconf() {
         echo "$(pwd)/out/bp/data/global/config/${filename}.json"
     fi
 }
+
+bitf() {
+    if [[ $1 = "ls" || $# -eq 0 ]]
+    then
+        (cd $bot && cd bitfan-client && ys ls)
+    else
+        echo "command $1 not supported"
+    fi
+}
