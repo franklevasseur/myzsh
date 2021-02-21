@@ -1,7 +1,30 @@
 # botpress
 bot="$HOME/Documents/botpress-root/"
 bot() {
-    cd $bot 
+    script="
+        const cliSelect = require('cli-select')
+        const fs = require('fs')
+        const path = require('path')
+
+        const bot = '$bot'
+
+        const childDirs = fs.readdirSync(bot, { withFileTypes: true })
+            .filter(dirent => dirent.isDirectory())
+            .map(dirent => dirent.name)
+            .filter(name => !name.startsWith('.'))
+
+        cliSelect({ values: ['root', ...childDirs], outputStream: process.stderr }).then(x => {
+                if (x.value === 'root') {
+                    console.log(bot)
+                    return
+                }
+                console.log(path.join(bot, x.value))
+            }).catch(() => {
+                console.log('.')
+                return
+            })
+    "
+    cd $(node -e $script)
 }
 
 yb() {
@@ -31,7 +54,7 @@ ys() {
         yarn start lang --dim=300
     elif [[ $1 = "stan" ]]
     then
-    	ys nlu --languageURL=http://localhost:3100 --ducklingURL=http://localhost:8000 --modelCacheSize=1gb --body-size=900kb
+    	ys nlu --languageURL=http://localhost:3100 --ducklingURL=http://localhost:8000 --modelCacheSize=1gb --body-size=900kb --silent
     else
         yarn start $@
     fi
@@ -53,6 +76,10 @@ duck() {
 	else
 	    echo "${duckDir} directory does not exist"
 	fi
+}
+
+redis() {
+    docker run -it --rm --name docker-redis redis
 }
 
 bpconf() {
