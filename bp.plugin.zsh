@@ -79,7 +79,7 @@ duck() {
 }
 
 redis() {
-    docker run -it --rm --name docker-redis redis
+    docker run -it --rm -p 6379:6379 --name docker-redis redis
 }
 
 bpconf() {
