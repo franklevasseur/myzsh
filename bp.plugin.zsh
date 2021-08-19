@@ -1,5 +1,7 @@
 # botpress
 bot="$HOME/Documents/botpress-root/"
+bp_sql_uri="postgres://postgres:postgres@localhost:5432/botpress"
+
 bot() {
     script="
         const cliSelect = require('cli-select')
@@ -101,5 +103,15 @@ bitf() {
         (cd $bot && cd bitfan-client && ys ls)
     else
         echo "command $1 not supported"
+    fi
+}
+
+bpsql() {
+    if [[ $# -eq 0 ]]
+    then
+        psql $bp_sql_uri
+    else
+        query=$1
+        psql $bp_sql_uri -c $1
     fi
 }
