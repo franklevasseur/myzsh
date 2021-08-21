@@ -47,6 +47,14 @@ y() {
 	yarn $@
 }
 
+yw() {
+	yarn workspace $@
+}
+
+yws() {
+	yarn workspaces run $@
+}
+
 duck() {
 	duckDir="${bot}duckling/"
 	if [ -d $duckDir ]
