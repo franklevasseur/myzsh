@@ -84,6 +84,10 @@ yt() {
     yarn test $@
 }
 
+yp() {
+    yarn package $@
+}
+
 y() {
 	yarn $@
 }
