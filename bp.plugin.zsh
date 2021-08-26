@@ -114,6 +114,23 @@ redis() {
     docker run -it --rm -p 6379:6379 --name docker-redis redis
 }
 
+getport() {
+    echo $(lsof -t -i:$1)
+}
+
+killport() {
+    port=$1
+    pid=$(getport $port)
+    
+    if [[ -z $pid ]]
+    then
+        echo "No process running on port $1"
+        return
+    fi
+    
+    kill -9 $pid
+}
+
 bpconf() {
     if [[ $# -eq 0 ]]
     then
