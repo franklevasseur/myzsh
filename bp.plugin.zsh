@@ -151,11 +151,12 @@ killport() {
 bpconf() {
     if [[ $# -eq 0 ]]
     then
+        
         pkg=$(current_pkg)
         if [[ $pkg = $bp_main_pkg ]] then
-            echo "packages/bp/dist/data/botpress.config.json"
+            echo "packages/bp/dist/data/global/botpress.config.json"
         elif [[ $pkg = $bp_core_pkg ]] then
-            echo "dist/data/botpress.config.json"
+            echo "dist/data/global/botpress.config.json"
         else
             echo "not in a kown botpress package: $pkg"
         fi
