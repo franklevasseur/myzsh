@@ -4,6 +4,9 @@ bot="$HOME/Documents/botpress-root/"
 bp_sql_uri="postgres://postgres:postgres@localhost:5432/botpress"
 bp_cache="$HOME/Library/ApplicationSupport/botpress"
 
+bp_main_pkg="bp_main"
+bp_core_pkg="botpress"
+
 bot() {
     script="
         const cliSelect = require('cli-select')
@@ -72,6 +75,20 @@ htmlize() {
     node -e $script $@
 }
 
+current_pkg() {
+  package_json="package.json"
+  if test -f "$package_json"; then
+      script="
+        try {
+          const fileContent = require('fs').readFileSync('$package_json');
+          console.log(JSON.parse(fileContent).name)
+        } catch {}
+      "
+      pkg_name=$(node -e "$script")
+      echo $pkg_name
+  fi
+}
+
 yb() {
     yarn build $@
 }
@@ -134,7 +151,15 @@ killport() {
 bpconf() {
     if [[ $# -eq 0 ]]
     then
-        echo "config file has moved a lot..."
+        pkg=$(current_pkg)
+        if [[ $pkg = $bp_main_pkg ]] then
+            echo "packages/bp/dist/data/botpress.config.json"
+        elif [[ $pkg = $bp_core_pkg ]] then
+            echo "dist/data/botpress.config.json"
+        else
+            echo "not in a kown botpress package: $pkg"
+        fi
+
     elif [[ $1 = "zsh" ]]
     then
         echo "$HOME/.oh-my-zsh/custom/plugins/bp/bp.plugin.zsh"
