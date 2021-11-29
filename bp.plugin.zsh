@@ -118,13 +118,7 @@ yws() {
 }
 
 duck() {
-	duckDir="${bot}duckling/"
-	if [ -d $duckDir ]
-	then
-		(cd $duckDir && stack exec duckling-example-exe)
-	else
-	    echo "${duckDir} directory does not exist"
-	fi
+    docker run -it --rm -p 8000:8000 --name docker-duckling rasa/duckling
 }
 
 redis() {
