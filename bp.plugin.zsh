@@ -1,6 +1,6 @@
 # botpress
-code="$HOME/Documents/code/"
-bot="$HOME/Documents/botpress-root/"
+code="$HOME/Documents/code"
+bot="$HOME/Documents/botpress-root"
 bp_sql_uri="postgres://postgres:postgres@localhost:5432/botpress"
 bp_cache="$HOME/Library/ApplicationSupport/botpress"
 bp_zsh=${0:a}
