@@ -33,6 +33,18 @@ normalize() {
   node -e $nodejs_script
 }
 
+yv() {
+    raw=$(yarn -v)
+    nodejs_script="
+        const raw = '$raw'
+        const [major, minor, patch] = raw.split('.')
+        const majorNum = parseInt(major)
+        if (majorNum > 1) { console.log('berry') }
+        else if (majorNum === 1) { console.log('classic') }
+    "
+    node -e $nodejs_script
+}
+
 yb() {
     yarn build $@
 }
@@ -51,6 +63,34 @@ yp() {
 
 y() {
 	yarn $@
+}
+
+yl() {
+    yarn_release=$(yv)
+
+    if [[ $yarn_release = 'berry' ]]
+    then
+        raw=$(yarn workspaces list --json | tr '\n' ';')
+        nodejs_script="
+            const raw = '$raw'
+            const entries = raw.split(';').filter(x => x)
+            console.log(entries.map(JSON.parse).map(x => x.name).join('\n'))
+        "
+        node -e $nodejs_script
+        return
+    fi
+
+    if [[ $yarn_release = 'classic' ]]
+    then
+        raw=$(yarn workspaces info | sed '1,1d' | sed '$d' | tr -d '\n')
+        nodejs_script="
+            const raw = '$raw'
+            const entries = Object.keys(JSON.parse(raw))
+            console.log(entries.join('\n'))
+        "
+        node -e $nodejs_script
+        return
+    fi    
 }
 
 yw() {
