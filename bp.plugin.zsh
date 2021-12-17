@@ -65,7 +65,7 @@ y() {
 	yarn $@
 }
 
-yl() {
+ywls() {
     yarn_release=$(yv)
 
     if [[ $yarn_release = 'berry' ]]
@@ -94,7 +94,33 @@ yl() {
 }
 
 yw() {
-	yarn workspace $@
+    query=$1
+    args=${@:2}
+
+    if [[ $# < 2 ]]
+    then
+        echo "yw requires 2 arguments"
+        return
+    fi
+
+    target_workspaces=("${(@f)$(ywls | grep $query)}")
+    n_targets=${#target_workspaces[@]}
+
+    if [[ $n_targets > 1 ]]
+    then
+        echo "there is $n_targets ws targeted by your query"
+        return
+    fi
+
+    target_ws=$target_workspaces[1]
+    if [[ -z $target_ws ]]
+    then
+        echo "no ws targeted by your query"
+        return
+    fi
+
+    echo "yarn workspace $target_ws $args"
+    yarn workspace $target_ws $args
 }
 
 yws() {
