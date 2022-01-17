@@ -95,7 +95,7 @@ ywls() {
 
 yw() {
     query=$1
-    args=${@:2}
+    args=("${@: 2}")
 
     if [[ $# < 2 ]]
     then
