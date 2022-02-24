@@ -1,7 +1,7 @@
 # botpress
 code="$HOME/Documents/code"
 bot="$HOME/Documents/botpress-root"
-bp_sql_uri="postgres://postgres:postgres@localhost:5432/botpress"
+bp_sql_uri="postgres://postgres:postgres@localhost:5433/botpress"
 bp_cache="$HOME/Library/ApplicationSupport/botpress"
 bp_zsh=${0:a}
 
@@ -127,16 +127,20 @@ yws() {
 	yarn workspaces run $@
 }
 
-duck() {
+docker_duck() {
     docker run -it --rm -p 8000:8000 --name duckling rasa/duckling
 }
 
-redis() {
+docker_redis() {
     docker run -it --rm -p 6379:6379 --name redis redis
 }
 
+docker_pg() {
+    docker run -it --rm -p 5432:5432 -e POSTGRES_PASSWORD='postgres' -e POSTGRES_USER='postgres' --name postgres postgres
+}
+
 getport() {
-    echo $(lsof -t -i:$1)
+    echo $(lsof -t -i :$1)
 }
 
 killport() {
@@ -152,6 +156,18 @@ killport() {
     kill -9 $pid
 }
 
+fetch_duck() {
+    query=$1
+    output=$(curl -XPOST https://duckling.botpress.io/parse --data "locale=en_GB&text=$query")
+    nodejs_script="
+        const util = require('util');
+        const ducklingOutput = '$output'
+        const parsed = JSON.parse(ducklingOutput)
+        console.log(util.inspect(parsed, { colors: true, depth: 10 }))
+    "
+    node -e $nodejs_script
+}
+
 bpsql() {
     if [[ $# -eq 0 ]]
     then
@@ -160,4 +176,8 @@ bpsql() {
         query=$1
         psql $bp_sql_uri -c $1
     fi
+}
+
+tsn() {
+    ts-node --transpile-only $@
 }
