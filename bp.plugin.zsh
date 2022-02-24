@@ -159,9 +159,10 @@ killport() {
 fetch_duck() {
     query=$1
     output=$(curl -XPOST https://duckling.botpress.io/parse --data "locale=en_GB&text=$query")
+    escaped=$(echo "$output" | sed -e s/\'/\\\\\'/g)
     nodejs_script="
         const util = require('util');
-        const ducklingOutput = '$output'
+        const ducklingOutput = '$escaped'
         const parsed = JSON.parse(ducklingOutput)
         console.log(util.inspect(parsed, { colors: true, depth: 10 }))
     "
