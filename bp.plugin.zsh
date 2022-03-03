@@ -5,6 +5,8 @@ bp_sql_uri="postgres://postgres:postgres@localhost:5433/botpress"
 bp_cache="$HOME/Library/ApplicationSupport/botpress"
 bp_zsh=${0:a}
 
+alias rmlines="tr -d '\n'"
+
 pkgname() {
   dir=$1
   package_json="package.json"
@@ -159,14 +161,7 @@ killport() {
 fetch_duck() {
     query=$1
     output=$(curl -XPOST https://duckling.botpress.io/parse --data "locale=en_GB&text=$query")
-    escaped=$(echo "$output" | sed -e s/\'/\\\\\'/g)
-    nodejs_script="
-        const util = require('util');
-        const ducklingOutput = '$escaped'
-        const parsed = JSON.parse(ducklingOutput)
-        console.log(util.inspect(parsed, { colors: true, depth: 10 }))
-    "
-    node -e $nodejs_script
+    print_json $output
 }
 
 bpsql() {
@@ -181,4 +176,59 @@ bpsql() {
 
 tsn() {
     ts-node --transpile-only $@
+}
+
+print_json() {
+    if [[ $# -eq 1 ]]
+    then
+        content=$1
+    elif [[ $# -eq 0 ]]
+    then
+        local in; read in
+        content=$in
+    else
+        echo "print_json requires either stdin or argument"
+        return
+    fi
+
+    escaped=$(echo "$content" | sed -e s/\'/\\\\\'/g)
+    nodejs_script="
+        const util = require('util');
+        const raw = '$escaped'
+        const parsed = JSON.parse(raw)
+        console.log(util.inspect(parsed, { colors: true, depth: 10 }))
+    "
+    node -e $nodejs_script
+}
+
+query_json() {
+    if [[ $# -eq 2 ]]
+    then
+        content=$1
+        query=$2
+    elif [[ $# -eq 1 ]]
+    then
+        query=$1
+        local in; read in
+        content=$in
+    else
+        echo "query_json either 1 or 2 arguments"
+        return
+    fi
+
+    escaped=$(echo "$content" | sed -e s/\'/\\\\\'/g)
+    nodejs_script="
+        const raw = '$escaped'
+        const query = '$query'
+        const keys = query.split('.')
+        const parsed = JSON.parse(raw)
+
+        let tmp = parsed
+        for (const k of keys) {
+            tmp = tmp[k]
+        }
+
+        console.log(JSON.stringify(tmp))
+    "
+    node -e $nodejs_script
 }
