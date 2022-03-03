@@ -232,3 +232,23 @@ query_json() {
     "
     node -e $nodejs_script
 }
+
+# AWS Credentials Reminders
+
+aws_ls() {
+    access_token=$1
+    aws sso list-accounts --access-token $access_token | rmlines | query_json "accountList"
+}
+
+aws_roles() {
+    access_token=$1
+    account_id=$2
+    aws sso list-account-roles --access-token $access_token --account-id $account_id | rmlines | query_json "roleList"
+}
+
+aws_creds() {
+    access_token=$1
+    account_id=$2
+    role_name=$3
+    aws sso get-role-credentials --access-token $access_token --account-id $account_id --role-name $role_name | rmlines | query_json "roleCredentials"
+}
