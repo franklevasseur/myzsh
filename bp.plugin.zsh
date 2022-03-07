@@ -260,7 +260,10 @@ aws_get_creds() {
 ### 4. Others / Python ###
 ##########################
 
-venvme() {
+alias mkvenv="python3 -m venv .venv"
+
+# venv check out
+venvco() {
     if [[ -z $1 ]] then venvname='.venv' else venvname=$1 fi
     source "$venvname/bin/activate"
 }
