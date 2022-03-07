@@ -1,11 +1,115 @@
-# botpress
+#############################
+### 0. Botpress Constants ###
+#############################
+
 code="$HOME/Documents/code"
 bot="$HOME/Documents/botpress-root"
 bp_sql_uri="postgres://postgres:postgres@localhost:5433/botpress"
 bp_cache="$HOME/Library/ApplicationSupport/botpress"
 bp_zsh=${0:a}
 
-alias rmlines="tr -d '\n'"
+#############################
+### 1. Basic Unix / Utils ###
+#############################
+
+alias rmlines="tr -d '\n'" # removes new lines from string
+alias trimQuotes="sed -e 's/^.//' -e 's/.$//'" # removes first and last characters from string
+
+normalize() {
+  patharg=$1
+  nodejs_script="
+        try {
+          const path = require('path')
+          const normalized = path.normalize('$patharg')
+          console.log(normalized)
+        } catch {}
+      "
+  node -e $nodejs_script
+}
+
+print_json() {
+    if [[ $# -eq 1 ]]
+    then
+        content=$1
+    elif [[ $# -eq 0 ]]
+    then
+        local in; read in
+        content=$in
+    else
+        echo "print_json requires either stdin or argument"
+        return
+    fi
+
+    escaped=$(echo "$content" | sed -e s/\'/\\\\\'/g)
+    nodejs_script="
+        const util = require('util');
+        const raw = '$escaped'
+        const parsed = JSON.parse(raw)
+        console.log(util.inspect(parsed, { colors: true, depth: 10 }))
+    "
+    node -e $nodejs_script
+}
+
+query_json() {
+    if [[ $# -eq 2 ]]
+    then
+        content=$1
+        query=$2
+    elif [[ $# -eq 1 ]]
+    then
+        query=$1
+        local in; read in
+        content=$in
+    else
+        echo "query_json either 1 or 2 arguments"
+        return
+    fi
+
+    escaped=$(echo "$content" | sed -e s/\'/\\\\\'/g)
+    nodejs_script="
+        const raw = '$escaped'
+        const query = '$query'
+        const keys = query.split('.')
+        const parsed = JSON.parse(raw)
+
+        let tmp = parsed
+        for (const k of keys) {
+            tmp = tmp[k]
+        }
+
+        console.log(JSON.stringify(tmp))
+    "
+    node -e $nodejs_script
+}
+
+getport() {
+    echo $(lsof -t -i :$1)
+}
+
+killport() {
+    port=$1
+    pid=$(getport $port)
+    
+    if [[ -z $pid ]]
+    then
+        echo "No process running on port $1"
+        return
+    fi
+    
+    kill -9 $pid
+}
+
+############################
+### 2. Node / NPM / Yarn ###
+############################
+
+alias yb="yarn build"
+alias ys="yarn start"
+alias yt="yarn test"
+alias yp="yarn package"
+alias y="yarn"
+alias yws="yarn workspaces run"
+alias tsn="ts-node --transpile-only"
 
 pkgname() {
   dir=$1
@@ -23,18 +127,6 @@ pkgname() {
   fi
 }
 
-normalize() {
-  patharg=$1
-  nodejs_script="
-        try {
-          const path = require('path')
-          const normalized = path.normalize('$patharg')
-          console.log(normalized)
-        } catch {}
-      "
-  node -e $nodejs_script
-}
-
 yv() {
     raw=$(yarn -v)
     nodejs_script="
@@ -45,26 +137,6 @@ yv() {
         else if (majorNum === 1) { console.log('classic') }
     "
     node -e $nodejs_script
-}
-
-yb() {
-    yarn build $@
-}
-
-ys() {
-    yarn start $@
-}
-
-yt() {
-    yarn test $@
-}
-
-yp() {
-    yarn package $@
-}
-
-y() {
-	yarn $@
 }
 
 ywls() {
@@ -125,9 +197,9 @@ yw() {
     yarn workspace $target_ws $args
 }
 
-yws() {
-	yarn workspaces run $@
-}
+############################
+### 3. Botpress Services ###
+############################
 
 docker_duck() {
     docker run -it --rm -p 8000:8000 --name duckling rasa/duckling
@@ -139,23 +211,6 @@ docker_redis() {
 
 docker_pg() {
     docker run -it --rm -p 5432:5432 -e POSTGRES_PASSWORD='postgres' -e POSTGRES_USER='postgres' --name postgres postgres
-}
-
-getport() {
-    echo $(lsof -t -i :$1)
-}
-
-killport() {
-    port=$1
-    pid=$(getport $port)
-    
-    if [[ -z $pid ]]
-    then
-        echo "No process running on port $1"
-        return
-    fi
-    
-    kill -9 $pid
 }
 
 fetch_duck() {
@@ -174,81 +229,38 @@ bpsql() {
     fi
 }
 
-tsn() {
-    ts-node --transpile-only $@
+##########################
+### 4. AWS Credentials ###
+##########################
+
+aws_read_token() {
+    aws_sso_cache_file=$1
+    echo $(cat $aws_sso_cache_file | query_json 'accessToken' | trimQuotes)
 }
 
-print_json() {
-    if [[ $# -eq 1 ]]
-    then
-        content=$1
-    elif [[ $# -eq 0 ]]
-    then
-        local in; read in
-        content=$in
-    else
-        echo "print_json requires either stdin or argument"
-        return
-    fi
-
-    escaped=$(echo "$content" | sed -e s/\'/\\\\\'/g)
-    nodejs_script="
-        const util = require('util');
-        const raw = '$escaped'
-        const parsed = JSON.parse(raw)
-        console.log(util.inspect(parsed, { colors: true, depth: 10 }))
-    "
-    node -e $nodejs_script
-}
-
-query_json() {
-    if [[ $# -eq 2 ]]
-    then
-        content=$1
-        query=$2
-    elif [[ $# -eq 1 ]]
-    then
-        query=$1
-        local in; read in
-        content=$in
-    else
-        echo "query_json either 1 or 2 arguments"
-        return
-    fi
-
-    escaped=$(echo "$content" | sed -e s/\'/\\\\\'/g)
-    nodejs_script="
-        const raw = '$escaped'
-        const query = '$query'
-        const keys = query.split('.')
-        const parsed = JSON.parse(raw)
-
-        let tmp = parsed
-        for (const k of keys) {
-            tmp = tmp[k]
-        }
-
-        console.log(JSON.stringify(tmp))
-    "
-    node -e $nodejs_script
-}
-
-# AWS Credentials Reminders
-
-aws_ls() {
+aws_ls_accounts() {
     access_token=$1
     aws sso list-accounts --access-token $access_token | rmlines | query_json "accountList"
 }
 
-aws_roles() {
+aws_ls_roles() {
     access_token=$1
     account_id=$2
     aws sso list-account-roles --access-token $access_token --account-id $account_id | rmlines | query_json "roleList"
 }
 
-aws_creds() {
+aws_get_creds() {
     access_token=$1
     account_id=$2
     role_name=$3
     aws sso get-role-credentials --access-token $access_token --account-id $account_id --role-name $role_name | rmlines | query_json "roleCredentials"
+}
+
+##########################
+### 4. Others / Python ###
+##########################
+
+venvme() {
+    if [[ -z $1 ]] then venvname='.venv' else venvname=$1 fi
+    source "$venvname/bin/activate"
 }
