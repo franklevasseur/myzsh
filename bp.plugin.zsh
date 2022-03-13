@@ -260,7 +260,8 @@ aws_get_creds() {
 ### 4. Others / Python ###
 ##########################
 
-alias mkvenv="python3 -m venv .venv"
+alias mkvenv3="python3 -m venv .venv"
+alias mkvenv="python -m venv .venv"
 
 # venv check out
 venvco() {
