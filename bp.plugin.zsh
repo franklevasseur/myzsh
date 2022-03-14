@@ -268,3 +268,8 @@ venvco() {
     if [[ -z $1 ]] then venvname='.venv' else venvname=$1 fi
     source "$venvname/bin/activate"
 }
+
+rmvenv() {
+    if [[ -z $1 ]] then venvname='.venv' else venvname=$1 fi
+    rm -rf $venvname
+}
