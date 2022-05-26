@@ -27,59 +27,9 @@ normalize() {
   node -e $nodejs_script
 }
 
-print_json() {
-    if [[ $# -eq 1 ]]
-    then
-        content=$1
-    elif [[ $# -eq 0 ]]
-    then
-        local in; read in
-        content=$in
-    else
-        echo "print_json requires either stdin or argument"
-        return
-    fi
-
-    escaped=$(echo "$content" | sed -e s/\'/\\\\\'/g)
-    nodejs_script="
-        const util = require('util');
-        const raw = '$escaped'
-        const parsed = JSON.parse(raw)
-        console.log(util.inspect(parsed, { colors: true, depth: 10 }))
-    "
-    node -e $nodejs_script
-}
-
-query_json() {
-    if [[ $# -eq 2 ]]
-    then
-        content=$1
-        query=$2
-    elif [[ $# -eq 1 ]]
-    then
-        query=$1
-        local in; read in
-        content=$in
-    else
-        echo "query_json either 1 or 2 arguments"
-        return
-    fi
-
-    escaped=$(echo "$content" | sed -e s/\'/\\\\\'/g)
-    nodejs_script="
-        const raw = '$escaped'
-        const query = '$query'
-        const keys = query.split('.')
-        const parsed = JSON.parse(raw)
-
-        let tmp = parsed
-        for (const k of keys) {
-            tmp = tmp[k]
-        }
-
-        console.log(JSON.stringify(tmp))
-    "
-    node -e $nodejs_script
+allow() {
+    xattr -rd com.apple.quarantine $1
+    chmod +x $1
 }
 
 getport() {
@@ -215,8 +165,8 @@ docker_pg() {
 
 fetch_duck() {
     query=$1
-    output=$(curl -XPOST https://duckling.botpress.io/parse --data "locale=en_GB&text=$query")
-    print_json $output
+    output=$(curl -s -XPOST https://duckling.botpress.io/parse --data "locale=en_GB&text=$query")
+    echo $output | jq
 }
 
 bpsql() {
@@ -230,37 +180,9 @@ bpsql() {
 }
 
 ##########################
-### 4. AWS Credentials ###
-##########################
-
-aws_read_token() {
-    aws_sso_cache_file=$1
-    echo $(cat $aws_sso_cache_file | query_json 'accessToken' | trimQuotes)
-}
-
-aws_ls_accounts() {
-    access_token=$1
-    aws sso list-accounts --access-token $access_token | rmlines | query_json "accountList"
-}
-
-aws_ls_roles() {
-    access_token=$1
-    account_id=$2
-    aws sso list-account-roles --access-token $access_token --account-id $account_id | rmlines | query_json "roleList"
-}
-
-aws_get_creds() {
-    access_token=$1
-    account_id=$2
-    role_name=$3
-    aws sso get-role-credentials --access-token $access_token --account-id $account_id --role-name $role_name | rmlines | query_json "roleCredentials"
-}
-
-##########################
 ### 4. Others / Python ###
 ##########################
 
-alias mkvenv3="python3 -m venv .venv"
 alias mkvenv="python -m venv .venv"
 
 # venv check out
