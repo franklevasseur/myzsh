@@ -163,6 +163,11 @@ docker_pg() {
     docker run -it --rm -p 5432:5432 -e POSTGRES_PASSWORD='postgres' -e POSTGRES_USER='postgres' --name postgres postgres
 }
 
+docker_minio() {
+    datadir=$1
+    docker run -it --rm -p 9000:9000 -p 9001:9001 --name minio minio/minio server $datadir --console-address ":9001"
+}
+
 fetch_duck() {
     query=$1
     output=$(curl -s -XPOST https://duckling.botpress.io/parse --data "locale=en_GB&text=$query")
