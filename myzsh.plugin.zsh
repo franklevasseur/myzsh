@@ -38,13 +38,20 @@ killport() {
 ### 2. Node / NPM / Yarn ###
 ############################
 
+alias tsn="ts-node --transpile-only"
+
+alias y="yarn"
 alias yb="yarn build"
 alias ys="yarn start"
 alias yt="yarn test"
 alias yp="yarn package"
-alias y="yarn"
 alias yws="yarn workspaces run"
-alias tsn="ts-node --transpile-only"
+
+alias p= "pnpm"
+alias pb="pnpm build"
+alias ps="pnpm start"
+alias pt="pnpm test"
+alias pp="pnpm package"
 
 ###################
 ### 3. Services ###
