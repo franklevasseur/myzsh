@@ -47,7 +47,7 @@ alias yt="yarn test"
 alias yp="yarn package"
 alias yws="yarn workspaces run"
 
-alias p= "pnpm"
+p() { if [[ -z $1 ]]; then; pnpm install; else; pnpm $@; fi; }
 alias pb="pnpm build"
 alias ps="pnpm start"
 alias pt="pnpm test"
