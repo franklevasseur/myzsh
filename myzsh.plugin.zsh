@@ -45,6 +45,7 @@ alias yb="yarn build"
 alias ys="yarn start"
 alias yt="yarn test"
 alias yp="yarn package"
+alias yw="yarn workspace"
 alias yws="yarn workspaces run"
 
 p() { if [[ -z $1 ]]; then; pnpm install; else; pnpm $@; fi; }
@@ -52,6 +53,8 @@ alias pb="pnpm build"
 alias ps="pnpm start"
 alias pt="pnpm test"
 alias pp="pnpm package"
+alias pw="pnpm -r --stream --workspace-concurrency=1"
+
 
 ###################
 ### 3. Services ###
