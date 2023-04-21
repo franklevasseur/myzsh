@@ -17,8 +17,16 @@ allow() {
     chmod +x $1
 }
 
+getpid() {
+    echo $(ps -a -o 'pid,command' | grep "^$1") # only on mac
+}
+
 getport() {
     echo $(lsof -t -i :$1)
+}
+
+killpid() {
+    kill -9 $1
 }
 
 killport() {
@@ -50,9 +58,6 @@ alias yws="yarn workspaces run"
 
 p() { if [[ -z $1 ]]; then; pnpm install; else; pnpm $@; fi; }
 alias pb="pnpm build"
-alias ps="pnpm start"
-alias pt="pnpm test"
-alias pp="pnpm package"
 alias pw="pnpm -r --stream --workspace-concurrency=1"
 
 
