@@ -60,6 +60,7 @@ p() { if [[ -z $1 ]]; then; pnpm install; else; pnpm $@; fi; }
 alias pb="pnpm build"
 alias pw="pnpm -r --stream --workspace-concurrency=1"
 
+nodexe() { node -e "console.log($1)"; }
 
 ###################
 ### 3. Services ###
@@ -80,6 +81,10 @@ docker_pg() {
 docker_minio() {
     datadir=$1
     docker run -it --rm -p 9000:9000 -p 9001:9001 --name minio minio/minio server $datadir --console-address ":9001"
+}
+
+docker_openapi() {
+    docker run -it --rm -p 8080:8080 --name openapi botpress/openapi-generator-online
 }
 
 fetch_duck() {
