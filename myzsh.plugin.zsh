@@ -66,7 +66,7 @@ nodexe() { node -e "console.log($1)"; }
 ### 3. Services ###
 ###################
 
-docker_duck() {
+docker_duckling() {
     docker run -it --rm -p 8000:8000 --name duckling rasa/duckling
 }
 
@@ -87,10 +87,9 @@ docker_openapi() {
     docker run -it --rm -p 8080:8080 --name openapi botpress/openapi-generator-online
 }
 
-fetch_duck() {
-    query=$1
-    output=$(curl -s -XPOST https://duckling.botpress.io/parse --data "locale=en_GB&text=$query")
-    echo $output | jq
+docker_jump() {
+    container_id=$1
+    docker exec -it $container_id bash
 }
 
 #################
