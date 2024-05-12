@@ -42,6 +42,17 @@ killport() {
     kill -9 $pid
 }
 
+unalias gup # oh-my-zsh
+gup() {
+    if [[ -z $1 ]]
+    then
+        message="update"
+    else
+        message=$1
+    fi
+    git add --all && git commit -m $message && ggp # oh-my-zsh
+}
+
 ############################
 ### 2. Node / NPM / Yarn ###
 ############################
