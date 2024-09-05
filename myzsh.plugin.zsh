@@ -43,33 +43,32 @@ killport() {
 }
 
 unalias gup # oh-my-zsh
-gup() {
+
+gitmessage() {
     if [[ -z $1 ]]
     then
         message="update"
     else
         message=$1
     fi
+    echo $message
+}
+
+# git update (add, commit, push)
+gup() {
+    message=$(gitmessage $1)
     git add --all && git commit -m $message && ggp # oh-my-zsh
 }
 
+# git partial update (commit, push)
 -gup() {
-    if [[ -z $1 ]]
-    then
-        message="update"
-    else
-        message=$1
-    fi
+    message=$(gitmessage $1)
     git commit -m $message && ggp # oh-my-zsh
 }
 
+# git partial update (add, commit)
 gup-() {
-    if [[ -z $1 ]]
-    then
-        message="update"
-    else
-        message=$1
-    fi
+    message=$(gitmessage $1)
     git add --all && git commit -m $message
 }
 
