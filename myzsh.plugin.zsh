@@ -53,6 +53,26 @@ gup() {
     git add --all && git commit -m $message && ggp # oh-my-zsh
 }
 
+-gup() {
+    if [[ -z $1 ]]
+    then
+        message="update"
+    else
+        message=$1
+    fi
+    git commit -m $message && ggp # oh-my-zsh
+}
+
+gup-() {
+    if [[ -z $1 ]]
+    then
+        message="update"
+    else
+        message=$1
+    fi
+    git add --all && git commit -m $message
+}
+
 ############################
 ### 2. Node / NPM / Yarn ###
 ############################
