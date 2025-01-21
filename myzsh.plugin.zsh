@@ -87,6 +87,7 @@ alias yw="yarn workspace"
 alias yws="yarn workspaces run"
 
 p() { if [[ -z $1 ]]; then; pnpm install; else; pnpm $@; fi; }
+alias px="pnpm dlx"
 alias pb="pnpm build"
 alias pw="pnpm -r --stream --workspace-concurrency=1"
 
