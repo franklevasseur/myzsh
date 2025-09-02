@@ -25,10 +25,6 @@ getport() {
     echo $(lsof -t -i :$1)
 }
 
-killpid() {
-    kill -9 $1
-}
-
 killport() {
     port=$1
     pid=$(getport $port)
@@ -40,36 +36,6 @@ killport() {
     fi
     
     kill -9 $pid
-}
-
-unalias gup # oh-my-zsh
-
-gitmessage() {
-    if [[ -z $1 ]]
-    then
-        message="update"
-    else
-        message=$1
-    fi
-    echo $message
-}
-
-# git update (add, commit, push)
-gup() {
-    message=$(gitmessage $1)
-    git add --all && git commit -m $message && ggp # oh-my-zsh
-}
-
-# git partial update (commit, push)
--gup() {
-    message=$(gitmessage $1)
-    git commit -m $message && ggp # oh-my-zsh
-}
-
-# git partial update (add, commit)
-gup-() {
-    message=$(gitmessage $1)
-    git add --all && git commit -m $message
 }
 
 ############################
@@ -138,4 +104,40 @@ venvco() {
 rmvenv() {
     if [[ -z $1 ]] then venvname='.venv' else venvname=$1 fi
     rm -rf $venvname
+}
+
+
+#######################
+### 5. Git / Github ###
+#######################
+
+unalias gup # oh-my-zsh
+
+# git update (add, commit, push)
+gup() {
+    if [[ -z $1 ]]
+    then
+        message="update"
+    else
+        message=$1
+    fi
+    git add --all && git commit -m $message && ggp # oh-my-zsh
+}
+
+# git force push
+gfp() {
+    branch=$(git branch --show-current)
+    git push origin $branch --force
+}
+
+# git force update (add, commit amend, force push)
+gfu() {
+    git add --all && git commit --amend --no-edit && gfp
+}
+
+gh_rerun() {
+  branch=$1
+  if [[ -z $branch ]]; then branch=$(git branch --show-current); fi
+  jobs=$(gh run list --branch $branch --json databaseId | jq '.[].databaseId')
+  gh run rerun $jobs
 }
