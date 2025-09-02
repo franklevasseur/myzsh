@@ -135,9 +135,12 @@ gfu() {
     git add --all && git commit --amend --no-edit && gfp
 }
 
-gh_rerun() {
+# github rerun
+grr() {
   branch=$1
   if [[ -z $branch ]]; then branch=$(git branch --show-current); fi
-  jobs=$(gh run list --branch $branch --json databaseId | jq '.[].databaseId')
-  gh run rerun $jobs
+  jobs=($(gh run list --branch $branch --status failure --json databaseId | jq '.[].databaseId'))
+  for job in $jobs; do
+    gh run rerun $job
+  done
 }
