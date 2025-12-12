@@ -111,7 +111,8 @@ rmvenv() {
 ### 5. Git / Github ###
 #######################
 
-unalias gup # oh-my-zsh
+unalias gup # oh-my-zsh / git pull --rebase
+unalias gcm # oh-my-zsh / git checkout $(git_main_branch)
 
 # git update (add, commit, push)
 gup() {
@@ -143,4 +144,35 @@ grr() {
   for job in $jobs; do
     gh run rerun $job
   done
+}
+
+# git commit message
+gcm() {
+  if [[ -z $1 ]]
+  then
+      git commit -m "update"
+      return
+  fi
+  git commit -m "$1"
+}
+
+# advanced git checkout
+gxo() {
+  if [[ -z $1 ]]
+  then
+      echo "Please provide a branch name"
+      return
+  fi
+
+  target_branch=$1
+
+  if git show-ref --quiet refs/heads/$target_branch; then
+    gco $target_branch
+    ggl
+    return
+  fi
+  
+  git fetch origin $target_branch
+  git checkout $target_branch
+  ggl
 }
