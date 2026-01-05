@@ -111,7 +111,6 @@ rmvenv() {
 ### 5. Git / Github ###
 #######################
 
-unalias gup # oh-my-zsh / git pull --rebase
 unalias gcm # oh-my-zsh / git checkout $(git_main_branch)
 
 # git update (add, commit, push)
