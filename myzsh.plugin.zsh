@@ -112,6 +112,7 @@ rmvenv() {
 #######################
 
 unalias gcm # oh-my-zsh / git checkout $(git_main_branch)
+unalias gca # oh-my-zsh / git commit --verbose --all
 
 # git update (add, commit, push)
 gup() {
@@ -133,6 +134,11 @@ gfp() {
 # git force update (add, commit amend, force push)
 gfu() {
     git add --all && git commit --amend --no-edit && gfp
+}
+
+# git commit amend
+gca() {
+  git commit --amend --no-edit
 }
 
 # github rerun
