@@ -9,23 +9,21 @@ myzsh=${0:a}
 ### 1. Basic Unix / Utils ###
 #############################
 
-alias rmlines="tr -d '\n'" # removes new lines from string
-alias trimQuotes="sed -e 's/^.//' -e 's/.$//'" # removes first and last characters from string
-
-allow() {
-    xattr -rd com.apple.quarantine $1
-    chmod +x $1
-}
-
-getpid() {
-    echo $(ps -a -o 'pid,command' | grep "^$1") # only on mac
-}
-
 getport() {
-    echo $(lsof -t -i :$1)
+    if [[ -z $1 ]] then
+        echo "Please provide a port"
+        return
+    fi
+    port=$1
+    echo $(lsof -t -i :$port)
 }
 
 killport() {
+    if [[ -z $1 ]] then
+        echo "Please provide a port"
+        return
+    fi
+
     port=$1
     pid=$(getport $port)
     
@@ -63,10 +61,6 @@ nodexe() { node -e "console.log($1)"; }
 ### 3. Services ###
 ###################
 
-docker_duckling() {
-    docker run -it --rm -p 8000:8000 --name duckling rasa/duckling
-}
-
 docker_redis() {
     docker run -it --rm -p 6379:6379 --name redis redis
 }
@@ -75,16 +69,11 @@ docker_pg() {
     docker run -it --rm -p 5432:5432 -e POSTGRES_PASSWORD='postgres' -e POSTGRES_USER='postgres' --name postgres postgres
 }
 
-docker_minio() {
-    datadir=$1
-    docker run -it --rm -p 9000:9000 -p 9001:9001 --name minio minio/minio server $datadir --console-address ":9001"
-}
-
-docker_openapi() {
-    docker run -it --rm -p 8080:8080 --name openapi botpress/openapi-generator-online
-}
-
 docker_jump() {
+    if [[ -z $1 ]] then
+        echo "Please provide a container id"
+        return
+    fi
     container_id=$1
     docker exec -it $container_id bash
 }
@@ -139,16 +128,6 @@ gfu() {
 # git commit amend
 gca() {
   git commit --amend --no-edit
-}
-
-# github rerun
-grr() {
-  branch=$1
-  if [[ -z $branch ]]; then branch=$(git branch --show-current); fi
-  jobs=($(gh run list --branch $branch --status failure --json databaseId | jq '.[].databaseId'))
-  for job in $jobs; do
-    gh run rerun $job
-  done
 }
 
 # git commit message
