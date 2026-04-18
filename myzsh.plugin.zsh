@@ -2,12 +2,15 @@
 ### 0. Constants ###
 ####################
 
+zshrc="$HOME/.zshrc"
 code="$HOME/Documents/code"
 myzsh=${0:a}
 
 #############################
 ### 1. Basic Unix / Utils ###
 #############################
+
+alias resrc="source $zshrc"
 
 getport() {
     if [[ -z $1 ]] then
