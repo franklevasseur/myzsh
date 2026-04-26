@@ -11,6 +11,7 @@ myzsh=${0:a}
 #############################
 
 alias resrc="source $zshrc"
+alias proton="pass-cli"
 
 getport() {
     if [[ -z $1 ]] then
@@ -64,21 +65,12 @@ nodexe() { node -e "console.log($1)"; }
 ### 3. Services ###
 ###################
 
-docker_redis() {
+runredis() {
     docker run -it --rm -p 6379:6379 --name redis redis
 }
 
-docker_pg() {
+runpg() {
     docker run -it --rm -p 5432:5432 -e POSTGRES_PASSWORD='postgres' -e POSTGRES_USER='postgres' --name postgres postgres
-}
-
-docker_jump() {
-    if [[ -z $1 ]] then
-        echo "Please provide a container id"
-        return
-    fi
-    container_id=$1
-    docker exec -it $container_id bash
 }
 
 #################
