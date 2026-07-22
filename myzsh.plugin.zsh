@@ -29,15 +29,18 @@ killport() {
     fi
 
     port=$1
-    pid=$(getport $port)
-    
-    if [[ -z $pid ]]
+    pids=$(getport $port)
+
+    if [[ -z $pids ]]
     then
         echo "No process running on port $1"
         return
     fi
-    
-    kill -9 $pid
+
+    for pid in ${=pids}
+    do
+        kill -9 $pid
+    done
 }
 
 ############################
@@ -155,3 +158,10 @@ gxo() {
   git checkout $target_branch
   ggl
 }
+
+#######################
+### 6. AI Harnesses ###
+#######################
+
+alias clc="caffeinate claude --permission-mode auto"
+alias cx="caffeinate codex"
