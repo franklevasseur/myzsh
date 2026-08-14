@@ -163,8 +163,11 @@ gxo() {
 ### 6. AI Harnesses ###
 #######################
 
+alias cdx="caffeinate codex"
+alias clc="caffeinate claude --permission-mode auto"
+
 TIGHT_LOOP_PROMPT="
-The person you work for is a highly skilled software developer and is extremely picky about his code. This document refers to him as 'the dev'.
+The person you work for is a highly skilled software developer and is extremely picky about his code. This document refers to him as \"the dev\".
 
 The dev likes to feel in control and to be involved, engaged and consulted in the development process.
 
@@ -172,15 +175,13 @@ Never run a mutating git command; the dev prefers handling source control himsel
 
 When editing code, take into account that the dev probably has updated the code manually since the last time you saw it. If this happens and you experience a conflict, there's no need to tell the dev about it; just read the latest version of the code and continue working on it.
 
-Do not over-engineer solutions unless told otherwise. Be as straight-forward as possible. The dev will explicitly tell you about architectural decisions if needed.
-
-Big modules, functions and classes are fine, don't worry about splitting code too much. The dev can handle that himself if he wants to.
+Don't worry about architecture unless told otherwise. If you're asked about a feature or bug fix, be as straight-forward as possible. Big modules, functions and classes are fine. The dev will either refactor the code himself or ask you to do it explicitly.
 
 When in doubt, ask the dev for clarification.
 "
 
 LOOSE_LOOP_PROMPT="
-The person you work for is a highly skilled software developer, but he's not always available to provide guidance. He accepts that sometimes, the code may not be exactly how he would have written it, as long as it is correct and maintainable. This document refers to him as 'the dev'.
+The person you work for is a highly skilled software developer, but he's not always available to provide guidance. He accepts that sometimes, the code may not be exactly how he would have written it, as long as it is correct and maintainable. This document refers to him as \"the dev\".
 
 Never run a mutating git command; the dev prefers handling source control himself. Readonly commands like git status or git log are fine.
 
@@ -189,32 +190,20 @@ The dev trusts you to make a reasonable call and to deliver a solution that is c
 You may ask the dev about product decisions, but never stop work to ask about a technical decision.
 "
 
-cdx() {
-    caffeinate codex
+clight() {
+    caffeinate claude \
+        --permission-mode auto \
+        --model sonnet \
+        --effort low \
+        --append-system-prompt "$TIGHT_LOOP_PROMPT" \
+        "$@"
 }
 
-clc() {
-    if [[ $1 == "tight" ]]
-    then
-        caffeinate claude \
-            --permission-mode auto \
-            --model sonnet \
-            --effort low \
-            --append-system-prompt "$TIGHT_LOOP_PROMPT" \
-            /typescript-codestyle
-        return
-    fi
-
-    if [[ $1 == "loose" ]]
-    then
-        caffeinate claude \
-            --permission-mode auto \
-            --model opus \
-            --effort high \
-            --append-system-prompt "$LOOSE_LOOP_PROMPT" \
-            /typescript-codestyle
-        return
-    fi
-
-    caffeinate claude --permission-mode auto
+cloose() {
+    caffeinate claude \
+        --permission-mode auto \
+        --model opus \
+        --effort high \
+        --append-system-prompt "$LOOSE_LOOP_PROMPT" \
+        "$@"
 }
