@@ -163,5 +163,31 @@ gxo() {
 ### 6. AI Harnesses ###
 #######################
 
-alias clc="caffeinate claude --permission-mode auto"
-alias cx="caffeinate codex"
+cx() {
+    caffeinate codex
+}
+
+clc() {
+
+    if [[ $1 == "--help" ]]
+    then
+        echo "Usage: clc [tight|loose]"
+        echo "  tight: Use the tight-loop skill for pair programming and code review."
+        echo "  loose: Use the loose-loop skill for big unsupervised tasks."
+        return
+    fi
+
+    if [[ $1 == "tight" ]]
+    then
+        caffeinate claude --model sonnet --effort low /typescript-codestyle /tight-loop
+        return
+    fi
+
+    if [[ $1 == "loose" ]]
+    then
+        caffeinate claude --model opus --effort high --permission-mode auto /typescript-codestyle /loose-loop
+        return
+    fi
+
+    caffeinate claude
+}
