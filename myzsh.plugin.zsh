@@ -190,15 +190,17 @@ The dev trusts you to make a reasonable call and to deliver a solution that is c
 You may ask the dev about product decisions, but never stop work to ask about a technical decision.
 "
 
+# claude tight loop
 clight() {
     caffeinate claude \
         --permission-mode auto \
         --model sonnet \
-        --effort low \
+        --effort medium \
         --append-system-prompt "$TIGHT_LOOP_PROMPT" \
         "$@"
 }
 
+# claude loose loop
 cloose() {
     caffeinate claude \
         --permission-mode auto \
