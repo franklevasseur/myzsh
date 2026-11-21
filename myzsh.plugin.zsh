@@ -165,6 +165,6 @@ gxo() {
 
 alias cdx="caffeinate codex"
 alias clc="caffeinate claude --permission-mode auto"
-alias pic="caffeinate pi"
-alias pic+="caffeinate pi --model gpt-5.6-terra --thinking medium --tight --fast"
-alias pic-="caffeinate pi --model gpt-5.6-sol --thinking high --loose"
+alias pic="caffeinate pi --model 'openai/gpt-5.6-sol' --thinking medium --fast"
+alias pic+="caffeinate pi --model 'openai/gpt-5.6-terra' --thinking medium --fast --tight"
+alias pic-="caffeinate pi --model 'openai/gpt-5.6-sol' --thinking high --loose"
