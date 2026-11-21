@@ -159,6 +159,16 @@ gxo() {
   ggl
 }
 
+ghr() {
+#   url="$(gh pr list --head "$(git branch --show-current)" --state open --json url --jq '.[0].url')" &&
+#   if [ -n "$url" ]; then
+#     open "$url"
+#   else
+#     gh pr create --web
+#   fi
+  gh pr view --web 2>/dev/null || gh pr create --web
+}
+
 #######################
 ### 6. AI Harnesses ###
 #######################
